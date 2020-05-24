@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,7 +26,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private JwtTokenProvider jwtTokenProvider;
-
+  
+  @Autowired
+  JwtTokenFilter customFilter;
+  
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
@@ -45,11 +49,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // If a user try to access a resource without having enough permissions
     http.exceptionHandling().accessDeniedPage("/login");
-
-    // Apply JWT
-    http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
     
-    http.cors();
+    http.cors().and().addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
   }
 
   @Override
