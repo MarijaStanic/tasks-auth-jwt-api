@@ -1,4 +1,4 @@
-package stanic.marija.tasks.security;
+package stanic.marija.tasks.model;
 
 import java.io.Serializable;
 

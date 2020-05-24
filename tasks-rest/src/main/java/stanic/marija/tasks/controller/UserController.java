@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import stanic.marija.tasks.dto.UserDataDTO;
+import stanic.marija.tasks.model.JwtTokenRequest;
+import stanic.marija.tasks.model.JwtTokenResponse;
 import stanic.marija.tasks.model.User;
-import stanic.marija.tasks.security.JwtTokenRequest;
-import stanic.marija.tasks.security.JwtTokenResponse;
 
 @CrossOrigin()
 @RestController

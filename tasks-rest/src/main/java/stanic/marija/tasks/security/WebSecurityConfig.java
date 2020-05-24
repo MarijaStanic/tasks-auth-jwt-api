@@ -54,7 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    // Allow swagger to be accessed without authentication
     web.ignoring()
         .antMatchers("/h2-console/**/**");;
   }
