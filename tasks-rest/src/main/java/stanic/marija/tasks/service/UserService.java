@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import stanic.marija.tasks.exception.CustomException;
 import stanic.marija.tasks.model.User;
 import stanic.marija.tasks.repository.UserRepository;
+import stanic.marija.tasks.security.JwtTokenProvider;
 
 @Service
 public class UserService {
@@ -22,15 +23,27 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+
+	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	public void signup(User user) {
+	public String signup(User user) {
 		if (!userRepository.existsByUsername(user.getUsername())) {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			userRepository.save(user);
-			// return JWT
+			return jwtTokenProvider.createToken(user.getUsername(), user.getRoles());
 		} else {
 			throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
+		}
+	}
+
+	public String signin(String username, String password) {
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
+		} catch (AuthenticationException e) {
+			throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
 
