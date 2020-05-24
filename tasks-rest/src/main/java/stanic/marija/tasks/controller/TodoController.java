@@ -2,6 +2,7 @@ package stanic.marija.tasks.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,18 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import stanic.marija.tasks.model.Todo;
-import stanic.marija.tasks.service.TodoHardcodedService;
+import stanic.marija.tasks.service.ToDoService;
+import stanic.marija.tasks.service.list.TodoHardcodedService;
 
 @CrossOrigin()
 @RestController
 public class TodoController {
 
 	@Autowired
-	private TodoHardcodedService todoService;
+	private ToDoService todoService;
 
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/users/{username}/todos")
-	public List<Todo> getAllTodos(@PathVariable String username) {
+	public Set<Todo> getAllTodos(@PathVariable String username) {
 		return todoService.findAll();
 	}
 
@@ -40,11 +42,8 @@ public class TodoController {
 
 	@DeleteMapping("/users/{username}/todos/{id}")
 	public ResponseEntity<Void> deleteTodo(@PathVariable String username, @PathVariable long id) {
-		Todo todo = todoService.deleteById(id);
-		if (todo != null) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.notFound().build();
+		todoService.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/users/{username}/todos/{id}")

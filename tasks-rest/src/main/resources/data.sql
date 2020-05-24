@@ -1,0 +1,1 @@
+insert into todo(username, description, target_date, is_done) values ('Dejan', 'Learn Spanish', sysdate(), false), ('Dejan', 'Learn Italian', sysdate(), false);

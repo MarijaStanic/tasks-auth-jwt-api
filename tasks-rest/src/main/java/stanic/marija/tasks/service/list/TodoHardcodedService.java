@@ -1,44 +1,47 @@
-package stanic.marija.tasks.service;
+package stanic.marija.tasks.service.list;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import stanic.marija.tasks.model.Todo;
+import stanic.marija.tasks.service.ToDoService;
 
+@Profile({"default"})
 @Service
-public class TodoHardcodedService {
+public class TodoHardcodedService implements ToDoService {
 
-	private static List<Todo> todos = new ArrayList<>();
-	private static int idCounter = 0;
+	private static Set<Todo> todos = new HashSet<>();
+	private static Long idCounter = 0L;
 
 	static {
 		todos.add(new Todo(++idCounter, "Tamara", "Learn to Dance", new Date(), false));
 		todos.add(new Todo(++idCounter, "Tamara", "Learn Docker", new Date(), false));
 	}
 
-	public List<Todo> findAll() {
+	public Set<Todo> findAll() {
 		return todos;
 	}
-	
-	public Todo deleteById(long id) {
+
+	@Override
+	public void deleteById(Long id) {
 		Todo todo = findById(id);
 		if (todo == null)
-			return null;
+			return;
 		todos.remove(todo);
-		return todo;
 	}
 
-	public Todo findById(long id) {
-		for (Todo todo: todos) {
-			if (todo.getId() == id)
-				return todo;
-		}
-		return null;
+	@Override
+	public Todo findById(Long id) {
+		return todos.stream().filter(td -> td.getId() == id).findFirst().orElse(null);
 	}
-	
+
+	@Override
 	public Todo save(Todo todo) {
 		if (todo.getId() == -1 || todo.getId() == 0) {
 			todo.setId(++idCounter);
@@ -49,6 +52,5 @@ public class TodoHardcodedService {
 		}
 		return todo;
 	}
-
 
 }
