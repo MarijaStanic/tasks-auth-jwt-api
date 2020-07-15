@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import stanic.marija.tasks.exception.CustomException;
+import stanic.marija.tasks.exception.ApiErrorException;
 import stanic.marija.tasks.model.User;
 import stanic.marija.tasks.repository.UserRepository;
 import stanic.marija.tasks.security.JwtTokenProvider;
@@ -34,7 +34,7 @@ public class UserService {
 			userRepository.save(user);
 			return jwtTokenProvider.createToken(user.getUsername(), user.getRoles());
 		} else {
-			throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
+			throw new ApiErrorException("The user doesn't exist", HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class UserService {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 			return jwtTokenProvider.createToken(username, userRepository.findByUsername(username).getRoles());
 		} catch (AuthenticationException e) {
-			throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+			throw new ApiErrorException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
 

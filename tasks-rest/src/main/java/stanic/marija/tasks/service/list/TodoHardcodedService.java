@@ -1,6 +1,5 @@
 package stanic.marija.tasks.service.list;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +19,8 @@ public class TodoHardcodedService implements ToDoService {
 	private static Long idCounter = 0L;
 
 	static {
-		todos.add(new Todo(++idCounter, "Tamara", "Learn to Dance", new Date(), false));
-		todos.add(new Todo(++idCounter, "Tamara", "Learn Docker", new Date(), false));
+		todos.add(new Todo(++idCounter, "Learn to Dance", new Date(), false));
+		todos.add(new Todo(++idCounter,"Learn Docker", new Date(), false));
 	}
 
 	public Set<Todo> findAll() {

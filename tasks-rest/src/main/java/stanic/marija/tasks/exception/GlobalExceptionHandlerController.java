@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandlerController {
 
-	
-	 @ExceptionHandler(CustomException.class)
-	 public void handleCustomException(HttpServletResponse res, CustomException ex) throws IOException {
+	 @ExceptionHandler(ApiErrorException.class)
+	 public void handleCustomException(HttpServletResponse res, ApiErrorException ex) throws IOException {
 	    res.sendError(ex.getHttpStatus().value(), ex.getMessage());
 	 }
 

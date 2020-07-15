@@ -13,7 +13,6 @@ public class Todo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String username;
 	private String description;
 	private Date targetDate;
 	private boolean isDone;
@@ -22,10 +21,9 @@ public class Todo {
 		super();
 	}
 
-	public Todo(Long id, String username, String description, Date targetDate, boolean isDone) {
+	public Todo(Long id, String description, Date targetDate, boolean isDone) {
 		super();
 		this.id = id;
-		this.username = username;
 		this.description = description;
 		this.targetDate = targetDate;
 		this.isDone = isDone;
@@ -37,14 +35,6 @@ public class Todo {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 	public String getDescription() {

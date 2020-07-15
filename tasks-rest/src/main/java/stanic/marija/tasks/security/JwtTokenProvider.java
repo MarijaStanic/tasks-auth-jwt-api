@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import stanic.marija.tasks.exception.CustomException;
+import stanic.marija.tasks.exception.ApiErrorException;
 import stanic.marija.tasks.model.Role;
 
 @Component
@@ -33,7 +34,7 @@ public class JwtTokenProvider {
 	private String secretKey;
 
 	@Value("${security.jwt.token.expire-length:3600000}")
-	private long validityInMilliseconds = 3600000; // 1h
+	private long validityInMilliseconds; // 1h
 
 	@Autowired
 	private MyUserDetails myUserDetails;
@@ -41,15 +42,16 @@ public class JwtTokenProvider {
 	@PostConstruct
 	protected void init() {
 		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+		System.out.println(secretKey);
 	}
 
 	public String createToken(String username, List<Role> roles) {
-
 		Claims claims = Jwts.claims().setSubject(username);
 		claims.put("auth",
 				roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).collect(Collectors.toList()));
 
 		Date now = new Date();
+		System.out.println(validityInMilliseconds);
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
 		return Jwts.builder().setClaims(claims).setIssuedAt(now).setExpiration(validity)
@@ -59,17 +61,17 @@ public class JwtTokenProvider {
 	public Authentication getAuthentication(String token) {
 		UserDetails userDetails = myUserDetails.loadUserByUsername(getUsername(token));
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-	}
+	} 
 
 	public String getUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 
-	public String resolveToken(String bearerToken) {
+	public Optional<String> resolveToken(String bearerToken) {
 		if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7);
+			return Optional.of(bearerToken.substring(7));
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public boolean validateToken(String token) {
@@ -77,7 +79,7 @@ public class JwtTokenProvider {
 			extractAllClaims(token);
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new CustomException("Expired or invalid JWT token", HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new ApiErrorException("Expired or invalid JWT token", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

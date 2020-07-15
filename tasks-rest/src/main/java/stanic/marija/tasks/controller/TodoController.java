@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,36 +25,37 @@ import stanic.marija.tasks.service.list.TodoHardcodedService;
 
 @CrossOrigin()
 @RestController
+@RequestMapping("/todos")
 public class TodoController {
 
 	@Autowired
 	private ToDoService todoService;
 
 	// @PreAuthorize("hasRole('ROLE_ADMIN')")
-	@GetMapping("/users/{username}/todos")
-	public Set<Todo> getAllTodos(@PathVariable String username) {
-		return todoService.findAll();
+	@GetMapping()
+	public ResponseEntity<Set<Todo>> getAllTodos() {
+		return ResponseEntity.ok(todoService.findAll());
 	}
 
-	@GetMapping("/users/{username}/todos/{id}")
-	public Todo getTodo(@PathVariable String username, @PathVariable long id) {
-		return todoService.findById(id);
+	@GetMapping("/{id}")
+	public ResponseEntity<Todo> getTodo( @PathVariable long id) {
+		return ResponseEntity.ok(todoService.findById(id));
 	}
 
-	@DeleteMapping("/users/{username}/todos/{id}")
-	public ResponseEntity<Void> deleteTodo(@PathVariable String username, @PathVariable long id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteTodo(@PathVariable long id) {
 		todoService.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 
-	@PutMapping("/users/{username}/todos/{id}")
-	public ResponseEntity<Todo> updateTodo(@PathVariable String username, @PathVariable long id,
+	@PutMapping("/{id}")
+	public ResponseEntity<Todo> updateTodo(@PathVariable long id,
 			@RequestBody Todo todo) {
 		Todo updatedTodo = this.todoService.save(todo);
 		return new ResponseEntity<Todo>(todo, HttpStatus.OK);
 	}
 
-	@PostMapping("/users/{username}/todos")
+	@PostMapping()
 	public ResponseEntity<Todo> saveTodo(@PathVariable String username, @RequestBody Todo todo) {
 		Todo createddTodo = this.todoService.save(todo);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createddTodo.getId())
